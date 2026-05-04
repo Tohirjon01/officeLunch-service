@@ -1,0 +1,55 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+telegram:
+  bot:
+    token: ${BOT_TOKEN}
+    username: ${BOT_USERNAME}
+
+lunch:
+  group-chat-id: ${LUNCH_GROUP_CHAT_ID}
+  timezone: Asia/Tashkent
+  default-delivery-price: 30000
+  default-container-price: 2000
+  default-deadline-time: "11:30"
+  rounding-strategy: CEIL_TO_100
+  scheduler:
+    enabled: true
+    open-cron: "0 0 10 * * MON-FRI"
+    reminder-cron: "0 15 11 * * MON-FRI"
+    close-cron: "0 30 11 * * MON-FRI"
+  bootstrap:
+    super-admin-telegram-user-id: ${SUPER_ADMIN_TELEGRAM_USER_ID:0}
+    super-admin-username: ${SUPER_ADMIN_USERNAME:}
+    super-admin-first-name: ${SUPER_ADMIN_FIRST_NAME:}
+    super-admin-last-name: ${SUPER_ADMIN_LAST_NAME:}
+    super-admin-private-chat-id: ${SUPER_ADMIN_PRIVATE_CHAT_ID:0}
+
+logging:
+  level:
+    uz.company.lunchbot: INFO
+    org.hibernate.SQL: WARN

@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: office-lunch-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: office-lunch-bot
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      BOT_USERNAME: ${BOT_USERNAME}
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      LUNCH_GROUP_CHAT_ID: ${LUNCH_GROUP_CHAT_ID}
+      SUPER_ADMIN_TELEGRAM_USER_ID: ${SUPER_ADMIN_TELEGRAM_USER_ID:-0}
+      SUPER_ADMIN_USERNAME: ${SUPER_ADMIN_USERNAME:-}
+      SUPER_ADMIN_FIRST_NAME: ${SUPER_ADMIN_FIRST_NAME:-}
+      SUPER_ADMIN_LAST_NAME: ${SUPER_ADMIN_LAST_NAME:-}
+      SUPER_ADMIN_PRIVATE_CHAT_ID: ${SUPER_ADMIN_PRIVATE_CHAT_ID:-0}
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
