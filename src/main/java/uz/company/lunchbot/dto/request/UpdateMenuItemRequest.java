@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 
 public record UpdateMenuItemRequest(
         @NotBlank String name,
-        @NotNull @DecimalMin(value = "0.00") BigDecimal price,
-        @NotNull Boolean active
+        @NotNull @DecimalMin(value = "0.00") BigDecimal price
 ) {
 }

@@ -37,9 +37,6 @@ public class OrderSession extends BaseEntity {
     @Column(name = "delivery_price", nullable = false, precision = 19, scale = 2)
     private BigDecimal deliveryPrice;
 
-    @Column(name = "container_price", nullable = false, precision = 19, scale = 2)
-    private BigDecimal containerPrice;
-
     @Column(name = "opened_at", nullable = false)
     private LocalDateTime openedAt;
 

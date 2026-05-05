@@ -14,9 +14,10 @@ public final class TelegramMenuLabels {
     public static final String EXTEND_DEADLINE = "Extend Deadline";
     public static final String NOT_RESPONDED_USERS = "Not Responded Users";
     public static final String PENDING_USERS = "Pending Users";
+    public static final String MANAGE_RESTAURANTS = "Manage Restaurants";
     public static final String MANAGE_MENU = "Manage Menu";
-    public static final String SET_DELIVERY_PRICE = "Set Delivery Price";
-    public static final String SET_CONTAINER_PRICE = "Set Container Price";
+    public static final String SET_CURRENT_SESSION_DELIVERY_PRICE = "Set Session Delivery";
+    public static final String RECALCULATE_CURRENT_SESSION = "Recalculate Session";
     public static final String MANUAL_ORDER_EDIT = "Manual Order Edit";
 
     private TelegramMenuLabels() {

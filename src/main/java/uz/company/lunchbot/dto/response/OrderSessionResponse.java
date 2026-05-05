@@ -12,7 +12,6 @@ public record OrderSessionResponse(
         LocalDate orderDate,
         OrderSessionStatus status,
         BigDecimal deliveryPrice,
-        BigDecimal containerPrice,
         LocalDateTime openedAt,
         LocalDateTime deadlineAt,
         LocalDateTime closedAt,

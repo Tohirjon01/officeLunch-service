@@ -6,9 +6,11 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record CreateMenuItemRequest(
-        Long restaurantId,
+        @NotNull Long restaurantId,
         @NotBlank String name,
         @NotNull @DecimalMin(value = "0.00") BigDecimal price,
-        Boolean active
+        Boolean active,
+        Boolean containerRequired,
+        @DecimalMin(value = "0.00") BigDecimal containerPriceOverride
 ) {
 }

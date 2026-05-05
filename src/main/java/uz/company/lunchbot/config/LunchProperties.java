@@ -1,6 +1,5 @@
 package uz.company.lunchbot.config;
 
-import java.math.BigDecimal;
 import java.time.LocalTime;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import uz.company.lunchbot.enums.RoundingStrategy;
@@ -9,8 +8,6 @@ import uz.company.lunchbot.enums.RoundingStrategy;
 public record LunchProperties(
         Long groupChatId,
         String timezone,
-        BigDecimal defaultDeliveryPrice,
-        BigDecimal defaultContainerPrice,
         LocalTime defaultDeadlineTime,
         RoundingStrategy roundingStrategy,
         Scheduler scheduler,

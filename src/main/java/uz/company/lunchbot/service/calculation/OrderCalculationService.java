@@ -5,10 +5,13 @@ import java.math.RoundingMode;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import uz.company.lunchbot.config.LunchProperties;
+import uz.company.lunchbot.entity.MenuItem;
 import uz.company.lunchbot.entity.OrderSession;
 import uz.company.lunchbot.entity.UserOrder;
+import uz.company.lunchbot.enums.RecalculationMode;
 import uz.company.lunchbot.enums.RoundingStrategy;
 import uz.company.lunchbot.enums.UserOrderStatus;
+import uz.company.lunchbot.exception.CalculationException;
 
 @Service
 public class OrderCalculationService {
@@ -18,36 +21,90 @@ public class OrderCalculationService {
     private static final BigDecimal THOUSAND = BigDecimal.valueOf(1000);
 
     private final LunchProperties lunchProperties;
+    private final ContainerPricingService containerPricingService;
 
-    public OrderCalculationService(LunchProperties lunchProperties) {
+    public OrderCalculationService(LunchProperties lunchProperties, ContainerPricingService containerPricingService) {
         this.lunchProperties = lunchProperties;
+        this.containerPricingService = containerPricingService;
     }
 
-    public void recalculate(OrderSession session, List<UserOrder> orders) {
+    public CalculationResult recalculate(OrderSession session, List<UserOrder> orders, RecalculationMode mode) {
         List<UserOrder> orderedUsers = orders.stream()
                 .filter(order -> order.getStatus() == UserOrderStatus.ORDERED)
                 .toList();
 
+        BigDecimal configuredDeliveryPrice = defaultIfNull(session.getDeliveryPrice());
+        BigDecimal appliedDeliveryPrice = orderedUsers.isEmpty() ? BigDecimal.ZERO : configuredDeliveryPrice;
         BigDecimal deliveryShare = orderedUsers.isEmpty()
                 ? BigDecimal.ZERO
-                : session.getDeliveryPrice().divide(BigDecimal.valueOf(orderedUsers.size()), 2, RoundingMode.HALF_UP);
+                : appliedDeliveryPrice.divide(BigDecimal.valueOf(orderedUsers.size()), 2, RoundingMode.HALF_UP);
+
+        BigDecimal totalFoodAmount = BigDecimal.ZERO;
+        BigDecimal totalContainerAmount = BigDecimal.ZERO;
+        BigDecimal totalFinalAmount = BigDecimal.ZERO;
 
         for (UserOrder order : orders) {
             if (order.getStatus() != UserOrderStatus.ORDERED) {
-                order.setContainerPrice(BigDecimal.ZERO);
                 order.setDeliveryShare(BigDecimal.ZERO);
                 order.setFinalPrice(BigDecimal.ZERO);
                 continue;
             }
 
-            BigDecimal quantity = BigDecimal.valueOf(order.getQuantity());
-            BigDecimal base = order.getFoodPrice().multiply(quantity)
-                    .add(session.getContainerPrice().multiply(quantity))
-                    .add(deliveryShare);
+            validateOrderedOrder(order);
+            refreshSnapshotsForMode(order, mode);
 
-            order.setContainerPrice(session.getContainerPrice());
+            BigDecimal quantity = BigDecimal.valueOf(order.getQuantity());
+            BigDecimal foodTotal = defaultIfNull(order.getFoodPrice()).multiply(quantity);
+            BigDecimal containerTotal = defaultIfNull(order.getContainerPrice()).multiply(quantity);
+            BigDecimal rawFinal = foodTotal.add(containerTotal).add(deliveryShare);
+
             order.setDeliveryShare(deliveryShare);
-            order.setFinalPrice(applyRounding(base));
+            order.setFinalPrice(applyRounding(rawFinal));
+
+            totalFoodAmount = totalFoodAmount.add(foodTotal);
+            totalContainerAmount = totalContainerAmount.add(containerTotal);
+            totalFinalAmount = totalFinalAmount.add(defaultIfNull(order.getFinalPrice()));
+        }
+
+        BigDecimal exactTotal = totalFoodAmount.add(totalContainerAmount).add(appliedDeliveryPrice);
+        BigDecimal roundingDifference = totalFinalAmount.subtract(exactTotal);
+
+        return new CalculationResult(
+                orderedUsers.size(),
+                totalFoodAmount,
+                totalContainerAmount,
+                appliedDeliveryPrice,
+                totalFinalAmount,
+                roundingDifference);
+    }
+
+    public void capturePriceSnapshot(UserOrder order) {
+        validateOrderedOrder(order);
+        MenuItem menuItem = order.getMenuItem();
+        order.setFoodPrice(defaultIfNull(menuItem.getPrice()));
+        order.setContainerPrice(containerPricingService.resolve(menuItem));
+    }
+
+    private void refreshSnapshotsForMode(UserOrder order, RecalculationMode mode) {
+        switch (mode) {
+            case DELIVERY_ONLY -> {
+                // Keep stored food and container snapshots unchanged.
+            }
+            case DELIVERY_AND_CONTAINER -> order.setContainerPrice(containerPricingService.resolve(order.getMenuItem()));
+            case FULL_PRICE_REBUILD -> {
+                order.setFoodPrice(defaultIfNull(order.getMenuItem().getPrice()));
+                order.setContainerPrice(containerPricingService.resolve(order.getMenuItem()));
+            }
+        }
+    }
+
+    private void validateOrderedOrder(UserOrder order) {
+        MenuItem menuItem = order.getMenuItem();
+        if (menuItem == null) {
+            throw new CalculationException("Ordered user order must reference a menu item");
+        }
+        if (order.getQuantity() == null || order.getQuantity() <= 0) {
+            throw new CalculationException("Ordered user order must have quantity greater than zero");
         }
     }
 
@@ -67,5 +124,9 @@ public class OrderCalculationService {
             return BigDecimal.ZERO;
         }
         return value.divide(step, 0, RoundingMode.CEILING).multiply(step);
+    }
+
+    private BigDecimal defaultIfNull(BigDecimal value) {
+        return value == null ? BigDecimal.ZERO : value;
     }
 }

@@ -27,4 +27,10 @@ public class MenuItem extends BaseEntity {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
+
+    @Column(name = "container_required")
+    private Boolean containerRequired;
+
+    @Column(name = "container_price_override", precision = 19, scale = 2)
+    private BigDecimal containerPriceOverride;
 }

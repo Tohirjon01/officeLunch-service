@@ -10,6 +10,8 @@ public record MenuItemResponse(
         String name,
         BigDecimal price,
         boolean active,
+        Boolean containerRequired,
+        BigDecimal containerPriceOverride,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

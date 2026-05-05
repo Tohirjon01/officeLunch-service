@@ -20,6 +20,7 @@ import uz.company.lunchbot.entity.OrderSession;
 import uz.company.lunchbot.entity.UserOrder;
 import uz.company.lunchbot.enums.AuditAction;
 import uz.company.lunchbot.enums.PaymentStatus;
+import uz.company.lunchbot.enums.RecalculationMode;
 import uz.company.lunchbot.enums.UserOrderStatus;
 import uz.company.lunchbot.exception.BadRequestException;
 import uz.company.lunchbot.exception.NotFoundException;
@@ -85,8 +86,6 @@ public class UserOrderService {
         order.setMenuItem(null);
         order.setStatus(UserOrderStatus.SKIPPED);
         order.setQuantity(1);
-        order.setFoodPrice(BigDecimal.ZERO);
-        order.setContainerPrice(BigDecimal.ZERO);
         order.setDeliveryShare(BigDecimal.ZERO);
         order.setFinalPrice(BigDecimal.ZERO);
         order.setPaymentStatus(PaymentStatus.UNPAID);
@@ -124,12 +123,7 @@ public class UserOrderService {
         }
         MenuItem menuItem = validateMenuItemForSession(request.menuItemId(), order.getOrderSession());
         UserOrderStatus oldStatus = order.getStatus();
-        order.setMenuItem(menuItem);
-        order.setStatus(UserOrderStatus.ORDERED);
-        order.setQuantity(request.quantity() == null ? 1 : request.quantity());
-        order.setFoodPrice(menuItem.getPrice());
-        order.setPaymentStatus(PaymentStatus.UNPAID);
-        order.setOrderedAt(LocalDateTime.now(clock));
+        applyOrderedSelection(order, menuItem, request.quantity() == null ? 1 : request.quantity());
         UserOrder saved = userOrderRepository.save(order);
         recalculateSession(saved.getOrderSession());
         auditService.log(AuditAction.ORDER_UPDATED, saved.getOrderSession().getId(), saved.getUser().getId(), oldStatus, saved.getStatus());
@@ -145,8 +139,6 @@ public class UserOrderService {
         order.setStatus(UserOrderStatus.SKIPPED);
         order.setMenuItem(null);
         order.setQuantity(1);
-        order.setFoodPrice(BigDecimal.ZERO);
-        order.setContainerPrice(BigDecimal.ZERO);
         order.setDeliveryShare(BigDecimal.ZERO);
         order.setFinalPrice(BigDecimal.ZERO);
         order.setOrderedAt(LocalDateTime.now(clock));
@@ -163,7 +155,6 @@ public class UserOrderService {
         orderSessionService.ensureAdminCanEditOrders(order.getOrderSession());
         UserOrderStatus oldStatus = order.getStatus();
         order.setStatus(UserOrderStatus.CANCELLED);
-        order.setContainerPrice(BigDecimal.ZERO);
         order.setDeliveryShare(BigDecimal.ZERO);
         order.setFinalPrice(BigDecimal.ZERO);
         UserOrder saved = userOrderRepository.save(order);
@@ -197,12 +188,7 @@ public class UserOrderService {
                 .orElseGet(() -> createBaseOrder(session, user));
         UserOrderStatus oldStatus = order.getStatus();
         boolean created = order.getId() == null;
-        order.setMenuItem(menuItem);
-        order.setStatus(UserOrderStatus.ORDERED);
-        order.setQuantity(quantity);
-        order.setFoodPrice(menuItem.getPrice());
-        order.setPaymentStatus(PaymentStatus.UNPAID);
-        order.setOrderedAt(LocalDateTime.now(clock));
+        applyOrderedSelection(order, menuItem, quantity);
         UserOrder saved = userOrderRepository.save(order);
         recalculateSession(session);
         auditService.log(created ? AuditAction.ORDER_CREATED : AuditAction.ORDER_UPDATED,
@@ -237,9 +223,24 @@ public class UserOrderService {
         return order;
     }
 
+    private void applyOrderedSelection(UserOrder order, MenuItem menuItem, int quantity) {
+        if (quantity <= 0) {
+            throw new BadRequestException("Order quantity must be greater than zero");
+        }
+
+        order.setMenuItem(menuItem);
+        order.setStatus(UserOrderStatus.ORDERED);
+        order.setQuantity(quantity);
+        order.setPaymentStatus(PaymentStatus.UNPAID);
+        order.setOrderedAt(LocalDateTime.now(clock));
+        orderCalculationService.capturePriceSnapshot(order);
+        order.setDeliveryShare(BigDecimal.ZERO);
+        order.setFinalPrice(BigDecimal.ZERO);
+    }
+
     private void recalculateSession(OrderSession session) {
         List<UserOrder> allOrders = userOrderRepository.findAllByOrderSessionId(session.getId());
-        orderCalculationService.recalculate(session, allOrders);
+        orderCalculationService.recalculate(session, allOrders, RecalculationMode.DELIVERY_ONLY);
         userOrderRepository.saveAll(allOrders);
     }
 }

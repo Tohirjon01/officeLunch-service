@@ -3,6 +3,7 @@ package uz.company.lunchbot.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,4 +27,16 @@ public class Restaurant extends BaseEntity {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
+
+    @Column(name = "container_enabled", nullable = false)
+    private boolean containerEnabled;
+
+    @Column(name = "default_container_price", nullable = false, precision = 19, scale = 2)
+    private BigDecimal defaultContainerPrice;
+
+    @Column(name = "delivery_enabled", nullable = false)
+    private boolean deliveryEnabled;
+
+    @Column(name = "default_delivery_price", nullable = false, precision = 19, scale = 2)
+    private BigDecimal defaultDeliveryPrice;
 }

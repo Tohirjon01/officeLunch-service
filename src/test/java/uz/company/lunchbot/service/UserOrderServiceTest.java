@@ -10,17 +10,21 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import uz.company.lunchbot.config.LunchProperties;
 import uz.company.lunchbot.entity.LunchUser;
 import uz.company.lunchbot.entity.MenuItem;
 import uz.company.lunchbot.entity.OrderSession;
 import uz.company.lunchbot.entity.Restaurant;
 import uz.company.lunchbot.entity.UserOrder;
 import uz.company.lunchbot.enums.PaymentStatus;
+import uz.company.lunchbot.enums.RoundingStrategy;
 import uz.company.lunchbot.enums.UserOrderStatus;
+import uz.company.lunchbot.service.calculation.ContainerPricingService;
 import uz.company.lunchbot.service.calculation.OrderCalculationService;
 
 class UserOrderServiceTest {
@@ -31,11 +35,11 @@ class UserOrderServiceTest {
         var userService = mock(UserService.class);
         var menuItemService = mock(MenuItemService.class);
         var orderSessionService = mock(OrderSessionService.class);
-        var calculationService = mock(OrderCalculationService.class);
         var auditService = mock(AuditService.class);
         var adminAccessService = mock(uz.company.lunchbot.security.AdminAccessService.class);
 
         Clock clock = Clock.fixed(Instant.parse("2026-05-04T07:00:00Z"), ZoneId.of("UTC"));
+        OrderCalculationService calculationService = new OrderCalculationService(properties(), new ContainerPricingService());
 
         UserOrderService service = new UserOrderService(
                 userOrderRepository,
@@ -53,18 +57,19 @@ class UserOrderServiceTest {
 
         Restaurant restaurant = new Restaurant();
         restaurant.setId(1L);
+        restaurant.setContainerEnabled(true);
+        restaurant.setDefaultContainerPrice(new BigDecimal("2000"));
 
         OrderSession session = new OrderSession();
         session.setId(21L);
         session.setRestaurant(restaurant);
         session.setDeliveryPrice(new BigDecimal("30000"));
-        session.setContainerPrice(new BigDecimal("2000"));
 
         MenuItem menuItem = new MenuItem();
         menuItem.setId(31L);
         menuItem.setRestaurant(restaurant);
         menuItem.setPrice(new BigDecimal("33000"));
-        menuItem.setName("Bifteks");
+        menuItem.setName("Bifshteks");
         menuItem.setActive(true);
 
         UserOrder existing = new UserOrder();
@@ -74,6 +79,7 @@ class UserOrderServiceTest {
         existing.setStatus(UserOrderStatus.ORDERED);
         existing.setFoodPrice(new BigDecimal("35000"));
         existing.setPaymentStatus(PaymentStatus.UNPAID);
+        existing.setQuantity(1);
 
         when(userService.getApprovedUserByTelegramUserId(1001L)).thenReturn(user);
         when(orderSessionService.getActiveOrderingSession()).thenReturn(session);
@@ -88,7 +94,17 @@ class UserOrderServiceTest {
         assertThat(result.getId()).isEqualTo(41L);
         assertThat(result.getMenuItem()).isEqualTo(menuItem);
         assertThat(result.getFoodPrice()).isEqualByComparingTo("33000");
+        assertThat(result.getContainerPrice()).isEqualByComparingTo("2000");
         verify(userOrderRepository).save(existing);
-        verify(calculationService).recalculate(session, List.of(existing));
+    }
+
+    private static LunchProperties properties() {
+        return new LunchProperties(
+                1L,
+                "Asia/Tashkent",
+                LocalTime.NOON,
+                RoundingStrategy.CEIL_TO_100,
+                new LunchProperties.Scheduler(true, "", "", ""),
+                new LunchProperties.Bootstrap(0L, "", "", "", 0L));
     }
 }

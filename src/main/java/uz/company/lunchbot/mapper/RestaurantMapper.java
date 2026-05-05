@@ -15,6 +15,10 @@ public class RestaurantMapper {
                 restaurant.getAddress(),
                 restaurant.isDefault(),
                 restaurant.isActive(),
+                restaurant.isContainerEnabled(),
+                restaurant.getDefaultContainerPrice(),
+                restaurant.isDeliveryEnabled(),
+                restaurant.getDefaultDeliveryPrice(),
                 restaurant.getCreatedAt(),
                 restaurant.getUpdatedAt());
     }

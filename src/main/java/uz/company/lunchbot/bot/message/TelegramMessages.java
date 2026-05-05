@@ -107,6 +107,42 @@ public class TelegramMessages {
         return "There are no pending users right now.";
     }
 
+    public String restaurantManagementHelp() {
+        return """
+                Restaurant management commands:
+                /restaurants
+                /restaurant_create Name | phone-or-- | address-or-- | default(true/false) | active(true/false) | containerEnabled(true/false) | defaultContainerPrice | deliveryEnabled(true/false) | defaultDeliveryPrice
+                /restaurant_update id | Name | phone-or-- | address-or--
+                /restaurant_activate id
+                /restaurant_deactivate id
+                /restaurant_default id
+                /restaurant_container id | enabled(true/false) | defaultContainerPrice
+                /restaurant_delivery id | enabled(true/false) | defaultDeliveryPrice
+                """;
+    }
+
+    public String menuManagementHelp() {
+        return """
+                Menu management commands:
+                /menu restaurantId
+                /menu_add restaurantId | Name | price | active(true/false) | containerRequired(true/false/null) | containerPriceOverride-or--
+                /menu_update id | Name | price
+                /menu_activate id
+                /menu_deactivate id
+                /menu_container id | containerRequired(true/false/null) | containerPriceOverride-or--
+                /menu_container_override_remove id
+                """;
+    }
+
+    public String sessionPricingHelp() {
+        return """
+                Session pricing commands:
+                /session_delivery amount
+                /session_recalculate
+                /session_recalculate allow_confirmed
+                """;
+    }
+
     public String featureHandledViaApi(String feature) {
         return feature + " is available through the internal REST API in this MVP.";
     }

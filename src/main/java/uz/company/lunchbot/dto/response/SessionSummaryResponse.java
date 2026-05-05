@@ -14,7 +14,11 @@ public record SessionSummaryResponse(
         Long noResponseCount,
         List<MealSummaryItemResponse> meals,
         List<UserPaymentResponse> userPayments,
-        BigDecimal total,
+        BigDecimal totalFoodAmount,
+        BigDecimal totalContainerAmount,
+        BigDecimal deliveryPrice,
+        BigDecimal roundedTotal,
+        BigDecimal roundingDifference,
         String groupSummaryText,
         String restaurantOrderText
 ) {

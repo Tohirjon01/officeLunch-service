@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -89,10 +90,10 @@ public class OrderSessionController {
         return ApiResponse.ok(orderSessionMapper.toResponse(orderSessionService.updateDeliveryPrice(id, request.amount(), actorUserId)));
     }
 
-    @PostMapping("/{id}/container")
-    public ApiResponse<OrderSessionResponse> updateContainer(@PathVariable Long id,
-                                                             @Valid @RequestBody MoneyAmountRequest request,
-                                                             @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
-        return ApiResponse.ok(orderSessionMapper.toResponse(orderSessionService.updateContainerPrice(id, request.amount(), actorUserId)));
+    @PostMapping("/{id}/recalculate")
+    public ApiResponse<OrderSessionResponse> recalculate(@PathVariable Long id,
+                                                         @RequestParam(defaultValue = "false") boolean allowConfirmed,
+                                                         @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
+        return ApiResponse.ok(orderSessionMapper.toResponse(orderSessionService.recalculateSession(id, actorUserId, allowConfirmed)));
     }
 }

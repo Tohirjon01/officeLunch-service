@@ -18,9 +18,9 @@ public class TelegramKeyboards {
                 buttonRow(TelegramMenuLabels.TODAYS_SUMMARY, TelegramMenuLabels.NOT_RESPONDED_USERS),
                 buttonRow(TelegramMenuLabels.CLOSE_ORDER, TelegramMenuLabels.CONFIRM_ORDER),
                 buttonRow(TelegramMenuLabels.EXTEND_DEADLINE, TelegramMenuLabels.PENDING_USERS),
-                buttonRow(TelegramMenuLabels.MANAGE_MENU, TelegramMenuLabels.MANUAL_ORDER_EDIT),
-                buttonRow(TelegramMenuLabels.SET_DELIVERY_PRICE, TelegramMenuLabels.SET_CONTAINER_PRICE),
-                buttonRow(TelegramMenuLabels.HELP))
+                buttonRow(TelegramMenuLabels.MANAGE_RESTAURANTS, TelegramMenuLabels.MANAGE_MENU),
+                buttonRow(TelegramMenuLabels.SET_CURRENT_SESSION_DELIVERY_PRICE, TelegramMenuLabels.RECALCULATE_CURRENT_SESSION),
+                buttonRow(TelegramMenuLabels.MANUAL_ORDER_EDIT, TelegramMenuLabels.HELP))
                 : List.of(
                 buttonRow(TelegramMenuLabels.TODAYS_MENU, TelegramMenuLabels.PLACE_ORDER),
                 buttonRow(TelegramMenuLabels.MY_ORDER, TelegramMenuLabels.SKIP_TODAY),

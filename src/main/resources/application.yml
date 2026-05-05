@@ -33,8 +33,6 @@ telegram:
 lunch:
   group-chat-id: ${LUNCH_GROUP_CHAT_ID}
   timezone: Asia/Tashkent
-  default-delivery-price: 30000
-  default-container-price: 2000
   default-deadline-time: "11:30"
   rounding-strategy: CEIL_TO_100
   scheduler:

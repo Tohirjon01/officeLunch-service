@@ -18,6 +18,7 @@ import uz.company.lunchbot.enums.UserStatus;
 import uz.company.lunchbot.exception.ForbiddenException;
 import uz.company.lunchbot.exception.NotFoundException;
 import uz.company.lunchbot.service.OrderSessionService;
+import uz.company.lunchbot.service.TelegramAdminCommandService;
 import uz.company.lunchbot.service.UserOrderService;
 import uz.company.lunchbot.service.UserService;
 import uz.company.lunchbot.service.notification.TelegramNotificationService;
@@ -34,6 +35,7 @@ public class TelegramMessageHandler {
     private final SummaryService summaryService;
     private final TelegramNotificationService telegramNotificationService;
     private final TelegramMessages telegramMessages;
+    private final TelegramAdminCommandService telegramAdminCommandService;
 
     public void handle(Message message) {
         if (!message.hasText() || !isPrivateChat(message)) {
@@ -130,6 +132,11 @@ public class TelegramMessageHandler {
             return;
         }
 
+        if (telegramAdminCommandService.supports(text)) {
+            telegramNotificationService.sendPrivateText(chatId, telegramAdminCommandService.handle(user, text), null);
+            return;
+        }
+
         switch (text) {
             case TelegramMenuLabels.TODAYS_SUMMARY -> sendTodaySummary(chatId);
             case TelegramMenuLabels.NOT_RESPONDED_USERS -> sendNotRespondedUsers(chatId);
@@ -137,9 +144,10 @@ public class TelegramMessageHandler {
             case TelegramMenuLabels.CLOSE_ORDER -> closeTodayOrder(user, chatId);
             case TelegramMenuLabels.CONFIRM_ORDER -> confirmTodayOrder(user, chatId);
             case TelegramMenuLabels.EXTEND_DEADLINE -> extendTodayOrder(user, chatId);
-            case TelegramMenuLabels.MANAGE_MENU -> telegramNotificationService.sendPrivateText(chatId, telegramMessages.featureHandledViaApi("Manage Menu"), null);
-            case TelegramMenuLabels.SET_DELIVERY_PRICE -> telegramNotificationService.sendPrivateText(chatId, telegramMessages.featureHandledViaApi("Set Delivery Price"), null);
-            case TelegramMenuLabels.SET_CONTAINER_PRICE -> telegramNotificationService.sendPrivateText(chatId, telegramMessages.featureHandledViaApi("Set Container Price"), null);
+            case TelegramMenuLabels.MANAGE_RESTAURANTS -> telegramNotificationService.sendPrivateText(chatId, telegramMessages.restaurantManagementHelp(), null);
+            case TelegramMenuLabels.MANAGE_MENU -> telegramNotificationService.sendPrivateText(chatId, telegramMessages.menuManagementHelp(), null);
+            case TelegramMenuLabels.SET_CURRENT_SESSION_DELIVERY_PRICE -> telegramNotificationService.sendPrivateText(chatId, telegramMessages.sessionPricingHelp(), null);
+            case TelegramMenuLabels.RECALCULATE_CURRENT_SESSION -> recalculateCurrentSession(user, chatId);
             case TelegramMenuLabels.MANUAL_ORDER_EDIT -> telegramNotificationService.sendPrivateText(chatId, telegramMessages.featureHandledViaApi("Manual Order Edit"), null);
             default -> telegramNotificationService.sendApprovedMainMenu(user, telegramMessages.help());
         }
@@ -181,6 +189,13 @@ public class TelegramMessageHandler {
                 .orElseThrow(() -> new NotFoundException(telegramMessages.noSessionToday()));
         OrderSession extended = orderSessionService.extendSession(session.getId(), 10, actor.getId());
         telegramNotificationService.sendPrivateText(chatId, telegramMessages.sessionExtended(extended), null);
+    }
+
+    private void recalculateCurrentSession(LunchUser actor, Long chatId) {
+        OrderSession session = orderSessionService.getTodaySession()
+                .orElseThrow(() -> new NotFoundException(telegramMessages.noSessionToday()));
+        orderSessionService.recalculateSession(session.getId(), actor.getId(), false);
+        telegramNotificationService.sendPrivateText(chatId, telegramMessages.actionCompleted("Current session recalculated"), null);
     }
 
     private boolean isPrivateChat(Message message) {

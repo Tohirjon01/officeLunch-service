@@ -15,6 +15,8 @@ public class MenuItemMapper {
                 item.getName(),
                 item.getPrice(),
                 item.isActive(),
+                item.getContainerRequired(),
+                item.getContainerPriceOverride(),
                 item.getCreatedAt(),
                 item.getUpdatedAt());
     }

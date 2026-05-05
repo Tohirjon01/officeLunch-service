@@ -20,4 +20,12 @@ public final class MoneyUtils {
         formatter.setMaximumFractionDigits(0);
         return formatter.format(amount) + " UZS";
     }
+
+    public static String formatSignedUzs(BigDecimal amount) {
+        if (amount == null || amount.signum() == 0) {
+            return "0 UZS";
+        }
+        String prefix = amount.signum() > 0 ? "+" : "-";
+        return prefix + formatUzs(amount.abs());
+    }
 }

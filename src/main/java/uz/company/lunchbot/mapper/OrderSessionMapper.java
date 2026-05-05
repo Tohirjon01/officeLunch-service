@@ -15,7 +15,6 @@ public class OrderSessionMapper {
                 session.getOrderDate(),
                 session.getStatus(),
                 session.getDeliveryPrice(),
-                session.getContainerPrice(),
                 session.getOpenedAt(),
                 session.getDeadlineAt(),
                 session.getClosedAt(),

@@ -3,6 +3,7 @@ package uz.company.lunchbot.controller;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uz.company.lunchbot.dto.ApiResponse;
 import uz.company.lunchbot.dto.request.CreateMenuItemRequest;
+import uz.company.lunchbot.dto.request.MenuItemContainerSettingsRequest;
 import uz.company.lunchbot.dto.request.UpdateMenuItemRequest;
 import uz.company.lunchbot.dto.request.UpdateStatusRequest;
 import uz.company.lunchbot.dto.response.MenuItemResponse;
@@ -52,5 +54,18 @@ public class MenuItemController {
                                                       @Valid @RequestBody UpdateStatusRequest request,
                                                       @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
         return ApiResponse.ok(menuItemMapper.toResponse(menuItemService.updateStatus(id, request, actorUserId)));
+    }
+
+    @PatchMapping("/{id}/container")
+    public ApiResponse<MenuItemResponse> updateContainer(@PathVariable Long id,
+                                                         @Valid @RequestBody MenuItemContainerSettingsRequest request,
+                                                         @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
+        return ApiResponse.ok(menuItemMapper.toResponse(menuItemService.updateContainerSettings(id, request, actorUserId)));
+    }
+
+    @DeleteMapping("/{id}/container-override")
+    public ApiResponse<MenuItemResponse> removeContainerOverride(@PathVariable Long id,
+                                                                 @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
+        return ApiResponse.ok(menuItemMapper.toResponse(menuItemService.removeContainerOverride(id, actorUserId)));
     }
 }
