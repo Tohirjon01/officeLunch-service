@@ -7,15 +7,16 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import uz.company.lunchbot.bot.message.TelegramMenuLabels;
 import uz.company.lunchbot.bot.message.TelegramMessages;
+import uz.company.lunchbot.dto.request.RecalculateSessionRequest;
 import uz.company.lunchbot.dto.request.TelegramRegistrationRequest;
 import uz.company.lunchbot.dto.response.RegistrationResultResponse;
 import uz.company.lunchbot.dto.response.SessionSummaryResponse;
 import uz.company.lunchbot.entity.LunchUser;
 import uz.company.lunchbot.entity.OrderSession;
 import uz.company.lunchbot.entity.UserOrder;
+import uz.company.lunchbot.enums.RecalculationMode;
 import uz.company.lunchbot.enums.UserRole;
 import uz.company.lunchbot.enums.UserStatus;
-import uz.company.lunchbot.exception.ForbiddenException;
 import uz.company.lunchbot.exception.NotFoundException;
 import uz.company.lunchbot.service.OrderSessionService;
 import uz.company.lunchbot.service.TelegramAdminCommandService;
@@ -62,7 +63,7 @@ public class TelegramMessageHandler {
                 case TelegramMenuLabels.TODAYS_MENU -> handleTodaysMenu(chatId);
                 case TelegramMenuLabels.PLACE_ORDER -> handlePlaceOrder(chatId);
                 case TelegramMenuLabels.MY_ORDER -> handleMyOrder(chatId, telegramUserId);
-                case TelegramMenuLabels.SKIP_TODAY -> handleSkipToday(chatId, telegramUserId, user);
+                case TelegramMenuLabels.SKIP_TODAY -> handleSkipToday(telegramUserId, user);
                 case TelegramMenuLabels.HELP -> telegramNotificationService.sendPrivateText(chatId, telegramMessages.help(), null);
                 default -> handleAdminOrFallback(text, user, chatId);
             }
@@ -120,7 +121,7 @@ public class TelegramMessageHandler {
         telegramNotificationService.sendPrivateText(chatId, order == null ? telegramMessages.noResponseYet() : telegramMessages.myOrder(order), null);
     }
 
-    private void handleSkipToday(Long chatId, Long telegramUserId, LunchUser user) {
+    private void handleSkipToday(Long telegramUserId, LunchUser user) {
         userOrderService.skipToday(telegramUserId);
         telegramNotificationService.sendApprovedMainMenu(user, telegramMessages.skippedToday());
     }
@@ -194,7 +195,8 @@ public class TelegramMessageHandler {
     private void recalculateCurrentSession(LunchUser actor, Long chatId) {
         OrderSession session = orderSessionService.getTodaySession()
                 .orElseThrow(() -> new NotFoundException(telegramMessages.noSessionToday()));
-        orderSessionService.recalculateSession(session.getId(), actor.getId(), false);
+        RecalculateSessionRequest request = new RecalculateSessionRequest(RecalculationMode.FULL_PRICE_REBUILD, false);
+        orderSessionService.recalculateSession(session.getId(), request, actor.getId());
         telegramNotificationService.sendPrivateText(chatId, telegramMessages.actionCompleted("Current session recalculated"), null);
     }
 
