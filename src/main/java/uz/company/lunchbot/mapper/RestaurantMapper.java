@@ -11,14 +11,15 @@ public class RestaurantMapper {
         return new RestaurantResponse(
                 restaurant.getId(),
                 restaurant.getName(),
-                restaurant.getPhone(),
+                restaurant.getDescription(),
+                restaurant.getPhoneNumber(),
                 restaurant.getAddress(),
                 restaurant.isDefault(),
                 restaurant.isActive(),
-                restaurant.isContainerEnabled(),
-                restaurant.getDefaultContainerPrice(),
                 restaurant.isDeliveryEnabled(),
                 restaurant.getDefaultDeliveryPrice(),
+                restaurant.isContainerEnabled(),
+                restaurant.getDefaultContainerPrice(),
                 restaurant.getCreatedAt(),
                 restaurant.getUpdatedAt());
     }

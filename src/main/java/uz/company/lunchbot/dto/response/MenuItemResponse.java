@@ -8,10 +8,15 @@ public record MenuItemResponse(
         Long restaurantId,
         String restaurantName,
         String name,
+        String description,
         BigDecimal price,
         boolean active,
+        Integer sortOrder,
         Boolean containerRequired,
         BigDecimal containerPriceOverride,
+        String category,
+        String imageUrl,
+        String telegramImageFileId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

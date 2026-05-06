@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1cf5cc52-708b-47b4-b930-7dafd27144de" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1808e60c-795a-4656-afee-fdbda81f25f0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1808e60c-795a-4656-afee-fdbda81f25f0/storage_v2/_src_/database/lunch_bot.MsuLcA.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1808e60c-795a-4656-afee-fdbda81f25f0/storage_v2/_src_/database/lunch_bot.MsuLcA/schema/information_schema.FNRwLQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1808e60c-795a-4656-afee-fdbda81f25f0/storage_v2/_src_/database/lunch_bot.MsuLcA/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1808e60c-795a-4656-afee-fdbda81f25f0/storage_v2/_src_/database/lunch_bot.MsuLcA/schema/public.abK9xQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/TelegramSendPhotoRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/config/TelegramBotRegistrar.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/controller/PaymentController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/controller/RestaurantVoteSessionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/ChooseRestaurantWinnerRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/CreateRestaurantMenuItemRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/OpenRestaurantVoteSessionRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/TelegramAnswerCallbackQueryRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/UpdateMenuItemCategoryRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/UpdateMenuItemImageRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/response/PaymentResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/response/PaymentSummaryResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/response/RestaurantVoteCountResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/response/RestaurantVoteSessionResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/response/TelegramSendMessageResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/entity/Payment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/entity/RestaurantVote.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/entity/RestaurantVoteSession.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/enums/PaymentMethod.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/enums/PaymentRecordStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/enums/RestaurantVoteSessionStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/enums/UserLanguage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/repository/PaymentRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/repository/RestaurantVoteRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/repository/RestaurantVoteSessionRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/MenuPhotoUploadStateService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/NotificationService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/PaymentService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/RestaurantVoteSessionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/SummaryService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/TelegramRegistrationStateService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/calculation/impl/ContainerPricingServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/calculation/impl/OrderCalculationServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/AuditServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/MenuItemServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/MenuPhotoUploadStateServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/NotificationServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/OrderSessionServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/PaymentServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/RestaurantServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/RestaurantVoteSessionServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/TelegramAdminCommandServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/TelegramRegistrationStateServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/UserOrderServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/db/local/cleanup_local_dev.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/db/migration/V3__restaurant_menu_management_cleanup.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/db/migration/V4__restaurant_voting_and_payments.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/db/migration/V5__user_registration_language_phone.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/db/migration/V6__menu_item_images.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/db/migration/V7__menu_item_categories.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/bot/TelegramApiClientTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/bot/handler/TelegramCallbackHandlerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/bot/handler/TelegramMessageHandlerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/mapper/MenuItemMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/scheduler/LunchSchedulerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/MenuItemServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/NotificationServiceImplTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/PaymentServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/RestaurantServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/RestaurantVoteSessionServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/TelegramAdminCommandServiceImplTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/UserServiceRegistrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/OfficeLunchTelegramBot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/OfficeLunchTelegramBot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/TelegramApiClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/TelegramApiClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/handler/TelegramCallbackHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/handler/TelegramCallbackHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/handler/TelegramMessageHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/handler/TelegramMessageHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/keyboard/TelegramKeyboards.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/keyboard/TelegramKeyboards.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/message/TelegramMenuLabels.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/message/TelegramMenuLabels.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/message/TelegramMessages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/bot/message/TelegramMessages.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/config/LunchProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/config/LunchProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/config/TelegramBotProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/config/TelegramBotProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/controller/MenuItemController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/controller/MenuItemController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/controller/OrderSessionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/controller/OrderSessionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/controller/RestaurantController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/controller/RestaurantController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/CreateMenuItemRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/CreateMenuItemRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/CreateRestaurantRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/CreateRestaurantRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/OpenOrderSessionRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/OpenOrderSessionRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/TelegramRegistrationRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/TelegramRegistrationRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/UpdateMenuItemRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/UpdateMenuItemRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/UpdateRestaurantRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/request/UpdateRestaurantRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/response/MenuItemResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/response/MenuItemResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/response/RestaurantResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/dto/response/RestaurantResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/entity/LunchUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/entity/LunchUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/entity/MenuItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/entity/MenuItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/entity/Restaurant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/entity/Restaurant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/enums/AuditAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/enums/AuditAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/exception/CalculationException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/exception/CalculationException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/mapper/MenuItemMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/mapper/MenuItemMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/mapper/RestaurantMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/mapper/RestaurantMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/repository/LunchUserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/repository/LunchUserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/repository/MenuItemRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/repository/MenuItemRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/repository/OrderSessionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/repository/OrderSessionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/scheduler/LunchScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/scheduler/LunchScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/AuditService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/AuditService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/MenuItemService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/MenuItemService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/OrderSessionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/OrderSessionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/RestaurantService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/RestaurantService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/TelegramAdminCommandService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/TelegramAdminCommandService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/UserOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/UserOrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/calculation/ContainerPricingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/calculation/ContainerPricingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/calculation/OrderCalculationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/calculation/OrderCalculationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/notification/TelegramNotificationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/report/SummaryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uz/company/lunchbot/service/impl/SummaryServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/NotRespondedUsersDetectionTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/NotRespondedUsersDetectionTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/OrderSessionServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/OrderSessionServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/UserOrderServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/UserOrderServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/calculation/ContainerPricingServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/calculation/ContainerPricingServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/calculation/OrderCalculationServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/uz/company/lunchbot/service/calculation/OrderCalculationServiceTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_D:/START UPS/officeLunch-service" value="3DI7b3NOmhKjxqNqzbyogcY48Pg" />
+    </persistenceIdMap>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="176" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Tohirjon01&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Tohirjon01/officeLunch-service.git&quot;,
+    &quot;accountId&quot;: &quot;f0f9603c-a8fc-4fd1-883e-84c9b19e7f47&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="3DI7b3NOmhKjxqNqzbyogcY48Pg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Maven.office-lunch-bot [clean].executor": "Run",
+    "Maven.office-lunch-bot [compile].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.OfficeLunchBotApplication.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="OfficeLunchBotApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <envs>
+        <env name="BOT_TOKEN" value="8784893918:AAEB8APSDKo9ISRiC_ltEQUc5zW7Z0Mppbc" />
+        <env name="BOT_USERNAME" value="davr_lunch_order_bot" />
+        <env name="DB_PASSWORD" value="123" />
+        <env name="DB_URL" value="jdbc:postgresql://localhost:5432/lunch_bot" />
+        <env name="DB_USERNAME" value="postgres" />
+        <env name="LUNCH_GROUP_CHAT_ID" value="-1003686636167" />
+        <env name="SUPER_ADMIN_FIRST_NAME" value="Toxirjon" />
+        <env name="SUPER_ADMIN_LAST_NAME" value="Sadullayev" />
+        <env name="SUPER_ADMIN_PRIVATE_CHAT_ID" value="1067339285" />
+        <env name="SUPER_ADMIN_TELEGRAM_USER_ID" value="1067339285" />
+        <env name="SUPER_ADMIN_USERNAME" value="tokhirjon_sadullaev" />
+      </envs>
+      <module name="office-lunch-bot" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="uz.company.lunchbot.OfficeLunchBotApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1cf5cc52-708b-47b4-b930-7dafd27144de" name="Changes" comment="" />
+      <created>1777957820937</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1777957820937</updated>
+      <workItem from="1777957829998" duration="17486000" />
+      <workItem from="1777998955050" duration="18607000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>

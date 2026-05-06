@@ -14,6 +14,7 @@ import uz.company.lunchbot.entity.OrderSession;
 import uz.company.lunchbot.entity.UserOrder;
 import uz.company.lunchbot.repository.UserOrderRepository;
 import uz.company.lunchbot.service.calculation.OrderCalculationService;
+import uz.company.lunchbot.service.impl.UserOrderServiceImpl;
 
 class NotRespondedUsersDetectionTest {
 
@@ -27,7 +28,7 @@ class NotRespondedUsersDetectionTest {
         AuditService auditService = mock(AuditService.class);
         uz.company.lunchbot.security.AdminAccessService adminAccessService = mock(uz.company.lunchbot.security.AdminAccessService.class);
 
-        UserOrderService service = new UserOrderService(
+        UserOrderServiceImpl service = new UserOrderServiceImpl(
                 userOrderRepository,
                 userService,
                 menuItemService,

@@ -12,6 +12,8 @@ public interface LunchUserRepository extends JpaRepository<LunchUser, Long> {
 
     Optional<LunchUser> findByTelegramUserId(Long telegramUserId);
 
+    Optional<LunchUser> findByPrivateChatId(Long privateChatId);
+
     List<LunchUser> findAllByStatusOrderByCreatedAtAsc(UserStatus status);
 
     List<LunchUser> findAllByStatus(UserStatus status);

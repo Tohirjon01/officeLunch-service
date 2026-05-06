@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.company.lunchbot.dto.ApiResponse;
 import uz.company.lunchbot.dto.request.CreateRestaurantRequest;
+import uz.company.lunchbot.dto.request.CreateRestaurantMenuItemRequest;
 import uz.company.lunchbot.dto.request.RestaurantContainerSettingsRequest;
 import uz.company.lunchbot.dto.request.RestaurantDeliverySettingsRequest;
 import uz.company.lunchbot.dto.request.UpdateRestaurantRequest;
 import uz.company.lunchbot.dto.request.UpdateStatusRequest;
+import uz.company.lunchbot.dto.request.CreateMenuItemRequest;
 import uz.company.lunchbot.dto.response.MenuItemResponse;
 import uz.company.lunchbot.dto.response.RestaurantResponse;
 import uz.company.lunchbot.mapper.MenuItemMapper;
@@ -45,43 +47,84 @@ public class RestaurantController {
         return ApiResponse.ok(menuItemService.getAllByRestaurant(restaurantId).stream().map(menuItemMapper::toResponse).toList());
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<RestaurantResponse> getRestaurant(@PathVariable Long id) {
+        return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.getRequired(id)));
+    }
+
+    @PostMapping("/{restaurantId}/menu-items")
+    public ApiResponse<MenuItemResponse> createMenuItem(@PathVariable Long restaurantId,
+                                                        @Valid @RequestBody CreateRestaurantMenuItemRequest request,
+                                                        @RequestHeader("X-Actor-User-Id") Long actorUserId) {
+        return ApiResponse.ok(menuItemMapper.toResponse(menuItemService.create(new CreateMenuItemRequest(
+                restaurantId,
+                request.name(),
+                request.description(),
+                request.price(),
+                request.active(),
+                request.sortOrder(),
+                request.containerRequired(),
+                request.containerPriceOverride(),
+                request.category(),
+                request.imageUrl()
+        ), actorUserId)));
+    }
+
     @PostMapping
     public ApiResponse<RestaurantResponse> create(@Valid @RequestBody CreateRestaurantRequest request,
-                                                  @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
+                                                  @RequestHeader("X-Actor-User-Id") Long actorUserId) {
         return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.create(request, actorUserId)));
     }
 
     @PutMapping("/{id}")
     public ApiResponse<RestaurantResponse> update(@PathVariable Long id,
                                                   @Valid @RequestBody UpdateRestaurantRequest request,
-                                                  @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
+                                                  @RequestHeader("X-Actor-User-Id") Long actorUserId) {
         return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.update(id, request, actorUserId)));
     }
 
     @PatchMapping("/{id}/status")
     public ApiResponse<RestaurantResponse> updateStatus(@PathVariable Long id,
                                                         @Valid @RequestBody UpdateStatusRequest request,
-                                                        @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
+                                                        @RequestHeader("X-Actor-User-Id") Long actorUserId) {
         return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.updateStatus(id, request, actorUserId)));
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ApiResponse<RestaurantResponse> activate(@PathVariable Long id,
+                                                    @RequestHeader("X-Actor-User-Id") Long actorUserId) {
+        return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.updateStatus(id, new UpdateStatusRequest(true), actorUserId)));
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ApiResponse<RestaurantResponse> deactivate(@PathVariable Long id,
+                                                      @RequestHeader("X-Actor-User-Id") Long actorUserId) {
+        return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.updateStatus(id, new UpdateStatusRequest(false), actorUserId)));
     }
 
     @PatchMapping("/{id}/default")
     public ApiResponse<RestaurantResponse> setDefault(@PathVariable Long id,
-                                                      @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
+                                                      @RequestHeader("X-Actor-User-Id") Long actorUserId) {
+        return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.setDefault(id, actorUserId)));
+    }
+
+    @PatchMapping("/{id}/set-default")
+    public ApiResponse<RestaurantResponse> setDefaultExplicit(@PathVariable Long id,
+                                                              @RequestHeader("X-Actor-User-Id") Long actorUserId) {
         return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.setDefault(id, actorUserId)));
     }
 
     @PatchMapping("/{id}/container")
     public ApiResponse<RestaurantResponse> updateContainer(@PathVariable Long id,
                                                            @Valid @RequestBody RestaurantContainerSettingsRequest request,
-                                                           @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
+                                                           @RequestHeader("X-Actor-User-Id") Long actorUserId) {
         return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.updateContainerSettings(id, request, actorUserId)));
     }
 
     @PatchMapping("/{id}/delivery")
     public ApiResponse<RestaurantResponse> updateDelivery(@PathVariable Long id,
                                                           @Valid @RequestBody RestaurantDeliverySettingsRequest request,
-                                                          @RequestHeader(value = "X-Actor-User-Id", required = false) Long actorUserId) {
+                                                          @RequestHeader("X-Actor-User-Id") Long actorUserId) {
         return ApiResponse.ok(restaurantMapper.toResponse(restaurantService.updateDeliverySettings(id, request, actorUserId)));
     }
 }

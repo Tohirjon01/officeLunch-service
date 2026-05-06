@@ -1,6 +1,7 @@
 package uz.company.lunchbot.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -26,6 +27,9 @@ import uz.company.lunchbot.enums.RoundingStrategy;
 import uz.company.lunchbot.enums.UserOrderStatus;
 import uz.company.lunchbot.service.calculation.ContainerPricingService;
 import uz.company.lunchbot.service.calculation.OrderCalculationService;
+import uz.company.lunchbot.service.calculation.impl.ContainerPricingServiceImpl;
+import uz.company.lunchbot.service.calculation.impl.OrderCalculationServiceImpl;
+import uz.company.lunchbot.service.impl.UserOrderServiceImpl;
 
 class UserOrderServiceTest {
 
@@ -39,9 +43,9 @@ class UserOrderServiceTest {
         var adminAccessService = mock(uz.company.lunchbot.security.AdminAccessService.class);
 
         Clock clock = Clock.fixed(Instant.parse("2026-05-04T07:00:00Z"), ZoneId.of("UTC"));
-        OrderCalculationService calculationService = new OrderCalculationService(properties(), new ContainerPricingService());
+        OrderCalculationService calculationService = new OrderCalculationServiceImpl(properties(), new ContainerPricingServiceImpl());
 
-        UserOrderService service = new UserOrderService(
+        UserOrderServiceImpl service = new UserOrderServiceImpl(
                 userOrderRepository,
                 userService,
                 menuItemService,
@@ -98,6 +102,59 @@ class UserOrderServiceTest {
         verify(userOrderRepository).save(existing);
     }
 
+    @Test
+    void shouldRejectMenuItemFromAnotherRestaurant() {
+        var userOrderRepository = mock(uz.company.lunchbot.repository.UserOrderRepository.class);
+        var userService = mock(UserService.class);
+        var menuItemService = mock(MenuItemService.class);
+        var orderSessionService = mock(OrderSessionService.class);
+        var auditService = mock(AuditService.class);
+        var adminAccessService = mock(uz.company.lunchbot.security.AdminAccessService.class);
+
+        Clock clock = Clock.fixed(Instant.parse("2026-05-04T07:00:00Z"), ZoneId.of("UTC"));
+        OrderCalculationService calculationService = new OrderCalculationServiceImpl(properties(), new ContainerPricingServiceImpl());
+
+        UserOrderServiceImpl service = new UserOrderServiceImpl(
+                userOrderRepository,
+                userService,
+                menuItemService,
+                orderSessionService,
+                calculationService,
+                auditService,
+                adminAccessService,
+                clock);
+
+        LunchUser user = new LunchUser();
+        user.setId(11L);
+        user.setTelegramUserId(1001L);
+
+        Restaurant sessionRestaurant = new Restaurant();
+        sessionRestaurant.setId(1L);
+
+        Restaurant foreignRestaurant = new Restaurant();
+        foreignRestaurant.setId(2L);
+
+        OrderSession session = new OrderSession();
+        session.setId(21L);
+        session.setRestaurant(sessionRestaurant);
+
+        MenuItem menuItem = new MenuItem();
+        menuItem.setId(31L);
+        menuItem.setRestaurant(foreignRestaurant);
+        menuItem.setPrice(new BigDecimal("33000"));
+        menuItem.setName("Foreign Meal");
+        menuItem.setActive(true);
+
+        when(userService.getApprovedUserByTelegramUserId(1001L)).thenReturn(user);
+        when(orderSessionService.getActiveOrderingSession()).thenReturn(session);
+        doNothing().when(orderSessionService).ensureUserCanPlaceOrder(session);
+        when(menuItemService.getRequired(31L)).thenReturn(menuItem);
+
+        assertThatThrownBy(() -> service.placeTodayOrder(1001L, 31L))
+                .isInstanceOf(uz.company.lunchbot.exception.BadRequestException.class)
+                .hasMessageContaining("Menu item does not belong to the session restaurant");
+    }
+
     private static LunchProperties properties() {
         return new LunchProperties(
                 1L,
@@ -105,6 +162,8 @@ class UserOrderServiceTest {
                 LocalTime.NOON,
                 RoundingStrategy.CEIL_TO_100,
                 new LunchProperties.Scheduler(true, "", "", ""),
+                new LunchProperties.RestaurantVoting(false, "", "", 5),
+                new LunchProperties.Payment(true, "8600", "Owner", true),
                 new LunchProperties.Bootstrap(0L, "", "", "", 0L));
     }
 }

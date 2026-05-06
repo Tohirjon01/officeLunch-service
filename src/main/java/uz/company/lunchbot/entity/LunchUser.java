@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import uz.company.lunchbot.enums.UserLanguage;
 import uz.company.lunchbot.enums.UserRole;
 import uz.company.lunchbot.enums.UserStatus;
 
@@ -30,6 +31,16 @@ public class LunchUser extends BaseEntity {
 
     @Column(name = "private_chat_id")
     private Long privateChatId;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "language", length = 8)
+    private UserLanguage language;
+
+    @Column(name = "bot_blocked", nullable = false)
+    private boolean botBlocked;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 32)

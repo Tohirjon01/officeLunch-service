@@ -11,6 +11,8 @@ public record LunchProperties(
         LocalTime defaultDeadlineTime,
         RoundingStrategy roundingStrategy,
         Scheduler scheduler,
+        RestaurantVoting restaurantVoting,
+        Payment payment,
         Bootstrap bootstrap
 ) {
 
@@ -19,6 +21,22 @@ public record LunchProperties(
             String openCron,
             String reminderCron,
             String closeCron
+    ) {
+    }
+
+    public record RestaurantVoting(
+            boolean enabled,
+            String openCron,
+            String closeCron,
+            int durationMinutes
+    ) {
+    }
+
+    public record Payment(
+            boolean enabled,
+            String cardNumber,
+            String cardOwnerName,
+            boolean sendReportOnClose
     ) {
     }
 

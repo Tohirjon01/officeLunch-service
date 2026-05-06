@@ -5,6 +5,7 @@ public record TelegramRegistrationRequest(
         String username,
         String firstName,
         String lastName,
-        Long privateChatId
+        Long privateChatId,
+        String phoneNumber
 ) {
 }

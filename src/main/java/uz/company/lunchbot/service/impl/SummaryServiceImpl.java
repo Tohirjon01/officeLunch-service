@@ -1,4 +1,4 @@
-package uz.company.lunchbot.service.report;
+package uz.company.lunchbot.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -18,28 +18,42 @@ import uz.company.lunchbot.enums.UserOrderStatus;
 import uz.company.lunchbot.repository.LunchUserRepository;
 import uz.company.lunchbot.repository.UserOrderRepository;
 import uz.company.lunchbot.service.OrderSessionService;
+import uz.company.lunchbot.service.SummaryService;
 import uz.company.lunchbot.util.MoneyUtils;
 
 @Service
 @RequiredArgsConstructor
-public class SummaryService {
+public class SummaryServiceImpl implements SummaryService {
 
     private final OrderSessionService orderSessionService;
     private final UserOrderRepository userOrderRepository;
     private final LunchUserRepository lunchUserRepository;
 
+    @Override
     public SessionSummaryResponse buildSummary(Long sessionId) {
         OrderSession session = orderSessionService.getRequired(sessionId);
         List<UserOrder> orders = userOrderRepository.findAllByOrderSessionId(sessionId);
+        List<UserOrder> orderedOrders = orders.stream()
+                .filter(order -> order.getStatus() == UserOrderStatus.ORDERED && order.getMenuItem() != null)
+                .toList();
         long orderedCount = orders.stream().filter(order -> order.getStatus() == UserOrderStatus.ORDERED).count();
         long skippedCount = orders.stream().filter(order -> order.getStatus() == UserOrderStatus.SKIPPED).count();
         long noResponseCount = countNoResponse(orders);
 
         List<MealSummaryItemResponse> meals = buildMealSummary(orders);
         List<UserPaymentResponse> userPayments = buildUserPayments(orders);
-        BigDecimal total = userPayments.stream()
-                .map(UserPaymentResponse::finalPrice)
+        BigDecimal totalFoodAmount = orderedOrders.stream()
+                .map(order -> lineTotal(order.getFoodPrice(), order.getQuantity()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalContainerAmount = orderedOrders.stream()
+                .map(order -> lineTotal(order.getContainerPrice(), order.getQuantity()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal deliveryPrice = orderedOrders.isEmpty() ? BigDecimal.ZERO : defaultMoney(session.getDeliveryPrice());
+        BigDecimal roundedTotal = userPayments.stream()
+                .map(UserPaymentResponse::finalPrice)
+                .map(this::defaultMoney)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal roundingDifference = roundedTotal.subtract(totalFoodAmount.add(totalContainerAmount).add(deliveryPrice));
 
         return new SessionSummaryResponse(
                 session.getId(),
@@ -50,20 +64,27 @@ public class SummaryService {
                 noResponseCount,
                 meals,
                 userPayments,
-                total,
-                buildGroupSummaryText(session, orders, meals, userPayments, total, noResponseCount),
+                totalFoodAmount,
+                totalContainerAmount,
+                deliveryPrice,
+                roundedTotal,
+                roundingDifference,
+                buildGroupSummaryText(session, orders, meals, userPayments, roundedTotal, noResponseCount),
                 buildRestaurantText(session, meals));
     }
 
+    @Override
     public RestaurantOrderTextResponse buildRestaurantTextResponse(Long sessionId) {
         SessionSummaryResponse summary = buildSummary(sessionId);
         return new RestaurantOrderTextResponse(summary.restaurantOrderText());
     }
 
+    @Override
     public String buildGroupSummaryText(Long sessionId) {
         return buildSummary(sessionId).groupSummaryText();
     }
 
+    @Override
     public String buildRestaurantText(Long sessionId) {
         return buildSummary(sessionId).restaurantOrderText();
     }
@@ -98,6 +119,14 @@ public class SummaryService {
                         order.getFinalPrice(),
                         order.getPaymentStatus()))
                 .toList();
+    }
+
+    private BigDecimal lineTotal(BigDecimal unitPrice, Integer quantity) {
+        return defaultMoney(unitPrice).multiply(BigDecimal.valueOf(quantity == null ? 0L : quantity.longValue()));
+    }
+
+    private BigDecimal defaultMoney(BigDecimal value) {
+        return value == null ? BigDecimal.ZERO : value;
     }
 
     private String buildGroupSummaryText(OrderSession session,
@@ -152,7 +181,7 @@ public class SummaryService {
                 .orElse("No meals ordered");
 
         String address = session.getRestaurant().getAddress() == null ? "N/A" : session.getRestaurant().getAddress();
-        String phone = session.getRestaurant().getPhone() == null ? "N/A" : session.getRestaurant().getPhone();
+        String phone = session.getRestaurant().getPhoneNumber() == null ? "N/A" : session.getRestaurant().getPhoneNumber();
 
         return """
                 Assalomu alaykum.

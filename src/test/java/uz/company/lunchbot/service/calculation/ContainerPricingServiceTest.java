@@ -6,10 +6,11 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import uz.company.lunchbot.entity.MenuItem;
 import uz.company.lunchbot.entity.Restaurant;
+import uz.company.lunchbot.service.calculation.impl.ContainerPricingServiceImpl;
 
 class ContainerPricingServiceTest {
 
-    private final ContainerPricingService service = new ContainerPricingService();
+    private final ContainerPricingService service = new ContainerPricingServiceImpl();
 
     @Test
     void shouldReturnZeroWhenMenuItemExplicitlyDoesNotRequireContainer() {

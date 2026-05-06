@@ -13,10 +13,15 @@ public class MenuItemMapper {
                 item.getRestaurant().getId(),
                 item.getRestaurant().getName(),
                 item.getName(),
+                item.getDescription(),
                 item.getPrice(),
                 item.isActive(),
+                item.getSortOrder(),
                 item.getContainerRequired(),
                 item.getContainerPriceOverride(),
+                item.getCategory(),
+                item.getImageUrl(),
+                item.getTelegramImageFileId(),
                 item.getCreatedAt(),
                 item.getUpdatedAt());
     }
