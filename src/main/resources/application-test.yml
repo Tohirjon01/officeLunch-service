@@ -1,0 +1,67 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/lunch_bot}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:123}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+telegram:
+  bot:
+    enabled: ${BOT_ENABLED:true}
+    token: ${BOT_TOKEN}
+    username: ${BOT_USERNAME}
+
+lunch:
+  group-chat-id: ${LUNCH_GROUP_CHAT_ID:}
+  timezone: Asia/Tashkent
+
+  restaurant-voting:
+    enabled: true
+    open-cron: "0 32 10 * * MON-FRI"
+    close-cron: "0 40 10 * * MON-FRI"
+    duration-minutes: 8
+
+  scheduler:
+    enabled: true
+    reminder-cron: "0 20 11 * * MON-FRI"
+    close-cron: "0 30 11 * * MON-FRI"
+    rounding-strategy: ${LUNCH_ROUNDING_STRATEGY:CEIL_TO_100}
+  payment:
+    enabled: true
+    send-report-on-close: true
+    card-number: "8600 6861 0551 8388"
+    card-owner-name: "Toxirjon Sadullayev"
+  bootstrap:
+    super-admin-telegram-user-id: ${SUPER_ADMIN_TELEGRAM_USER_ID:0}
+    super-admin-username: ${SUPER_ADMIN_USERNAME:}
+    super-admin-first-name: ${SUPER_ADMIN_FIRST_NAME:}
+    super-admin-last-name: ${SUPER_ADMIN_LAST_NAME:}
+    super-admin-private-chat-id: ${SUPER_ADMIN_PRIVATE_CHAT_ID:0}
+
+logging:
+  level:
+    uz.company.lunchbot: INFO
+    org.hibernate.SQL: WARN
+
+postgres:
+  image: postgres:16-alpine
