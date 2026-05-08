@@ -22,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uz.company.lunchbot.bot.keyboard.TelegramKeyboards;
 import uz.company.lunchbot.bot.message.TelegramMessages;
 import uz.company.lunchbot.config.LunchProperties;
+import uz.company.lunchbot.config.TelegramBotProperties;
 import uz.company.lunchbot.dto.response.RestaurantVoteSessionResponse;
 import uz.company.lunchbot.entity.LunchUser;
 import uz.company.lunchbot.entity.MenuItem;
@@ -66,6 +67,7 @@ class RestaurantVoteSessionServiceTest {
                 adminAccessService,
                 auditService,
                 properties(),
+                telegramBotProperties(),
                 clock()
         );
 
@@ -117,6 +119,7 @@ class RestaurantVoteSessionServiceTest {
                 adminAccessService,
                 auditService,
                 properties(),
+                telegramBotProperties(),
                 clock()
         );
 
@@ -182,6 +185,7 @@ class RestaurantVoteSessionServiceTest {
                 adminAccessService,
                 auditService,
                 properties(),
+                telegramBotProperties(),
                 clock()
         );
 
@@ -217,6 +221,7 @@ class RestaurantVoteSessionServiceTest {
 
         assertThat(response.winnerRestaurantId()).isEqualTo(1L);
         verify(orderSessionService).openTodaySessionForRestaurantIfAbsent(1L, 7L);
+        verify(notificationService).sendGroupText(org.mockito.ArgumentMatchers.contains("G'olib restoran: Osh Posh"), any());
     }
 
     @Test
@@ -250,6 +255,7 @@ class RestaurantVoteSessionServiceTest {
                 adminAccessService,
                 auditService,
                 properties(),
+                telegramBotProperties(),
                 clock()
         );
 
@@ -320,6 +326,7 @@ class RestaurantVoteSessionServiceTest {
                 adminAccessService,
                 auditService,
                 properties(),
+                telegramBotProperties(),
                 clock()
         );
 
@@ -381,5 +388,9 @@ class RestaurantVoteSessionServiceTest {
                 new LunchProperties.Payment(true, "8600", "Owner", true),
                 new LunchProperties.Bootstrap(0L, "", "", "", 0L)
         );
+    }
+
+    private static TelegramBotProperties telegramBotProperties() {
+        return new TelegramBotProperties(true, "token", "your_bot_name");
     }
 }

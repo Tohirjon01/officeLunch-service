@@ -173,6 +173,10 @@ public class TelegramMessageHandler {
             telegramNotificationService.sendPrivateText(message.getChatId(), telegramMessages.chooseLanguage(), telegramKeyboards.languageSelection());
             return;
         }
+        if (existingUser.getStatus() == UserStatus.APPROVED && hasStartPayload(message, "order")) {
+            handlePlaceOrder(message.getChatId(), existingUser);
+            return;
+        }
         sendStatusAwareMessage(existingUser, message.getChatId());
     }
 
@@ -528,6 +532,15 @@ public class TelegramMessageHandler {
                 && user.getPrivateChatId() != null
                 && user.getPhoneNumber() != null
                 && user.getLanguage() != null;
+    }
+
+    private boolean hasStartPayload(Message message, String payload) {
+        if (message == null || !message.hasText()) {
+            return false;
+        }
+
+        String[] parts = message.getText().trim().split("\\s+", 2);
+        return parts.length == 2 && "/start".equals(parts[0]) && payload.equalsIgnoreCase(parts[1].trim());
     }
 
     private boolean isPrivateChat(Message message) {

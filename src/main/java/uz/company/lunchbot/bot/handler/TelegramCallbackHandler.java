@@ -51,12 +51,20 @@ public class TelegramCallbackHandler {
     private final TelegramRegistrationStateService registrationStateService;
     private final TelegramKeyboards telegramKeyboards;
 
+    private static final String ADMIN_PAYMENT_APPROVE_PREFIX = "admin_payment_approve_";
+    private static final String ADMIN_PAYMENT_REJECT_PREFIX = "admin_payment_reject_";
+
     public void handle(CallbackQuery callbackQuery) {
-        ParsedCallback parsed = callbackDataParser.parse(callbackQuery.getData());
+        String callbackData = callbackQuery.getData();
         Long chatId = callbackQuery.getMessage().getChatId();
         Long telegramUserId = callbackQuery.getFrom().getId();
 
         try {
+            if (handleAdminPaymentCallback(callbackData, telegramUserId, callbackQuery.getId())) {
+                return;
+            }
+
+            ParsedCallback parsed = callbackDataParser.parse(callbackData);
             switch (parsed.action()) {
                 case "LANG" -> handleLanguageSelection(chatId, telegramUserId, parsed.args().getFirst(), callbackQuery.getId());
                 case "ORDER_ITEM" -> handleUserOrder(chatId, telegramUserId, Long.parseLong(parsed.args().get(0)), Long.parseLong(parsed.args().get(1)), callbackQuery.getId());
@@ -86,9 +94,10 @@ public class TelegramCallbackHandler {
                 case "RESTAURANT_VOTE" -> handleRestaurantVote(telegramUserId, Long.parseLong(parsed.args().get(0)), Long.parseLong(parsed.args().get(1)), callbackQuery.getId());
                 case "RESTAURANT_WINNER" -> handleRestaurantWinner(telegramUserId, Long.parseLong(parsed.args().get(0)), Long.parseLong(parsed.args().get(1)), callbackQuery.getId());
                 case "PAYMENT_CASH", "PAYMENT_DECLARE_CASH" -> handleDeclareCash(telegramUserId, Long.parseLong(parsed.args().getFirst()), callbackQuery.getId());
+                case "PAYMENT_UPLOAD_RECEIPT" -> handleUploadReceiptPrompt(chatId, telegramUserId, callbackQuery.getId());
                 case "PAYMENT_STATUS" -> handlePaymentStatus(telegramUserId, Long.parseLong(parsed.args().getFirst()), callbackQuery.getId());
-                case "PAYMENT_APPROVE" -> handleApprovePayment(telegramUserId, Long.parseLong(parsed.args().getFirst()), callbackQuery.getId());
-                case "PAYMENT_REJECT" -> handleRejectPayment(telegramUserId, Long.parseLong(parsed.args().getFirst()), callbackQuery.getId());
+                case "PAYMENT_APPROVE", "ADMIN_PAYMENT_APPROVE" -> handleApprovePayment(telegramUserId, Long.parseLong(parsed.args().getFirst()), callbackQuery.getId());
+                case "PAYMENT_REJECT", "ADMIN_PAYMENT_REJECT" -> handleRejectPayment(telegramUserId, Long.parseLong(parsed.args().getFirst()), callbackQuery.getId());
                 case "PAYMENT_MARK_CASH_PAID" -> handleMarkCashPaid(telegramUserId, Long.parseLong(parsed.args().getFirst()), callbackQuery.getId());
                 default -> telegramNotificationService.answerCallback(callbackQuery.getId(), "Unknown action");
             }
@@ -96,6 +105,21 @@ public class TelegramCallbackHandler {
             log.error("telegram_callback_failed data={} reason={}", callbackQuery.getData(), exception.getMessage(), exception);
             telegramNotificationService.answerCallback(callbackQuery.getId(), exception.getMessage());
         }
+    }
+
+    private boolean handleAdminPaymentCallback(String callbackData, Long telegramUserId, String callbackQueryId) {
+        if (callbackData == null) {
+            return false;
+        }
+        if (callbackData.startsWith(ADMIN_PAYMENT_APPROVE_PREFIX)) {
+            handleApprovePayment(telegramUserId, Long.parseLong(callbackData.substring(ADMIN_PAYMENT_APPROVE_PREFIX.length())), callbackQueryId);
+            return true;
+        }
+        if (callbackData.startsWith(ADMIN_PAYMENT_REJECT_PREFIX)) {
+            handleRejectPayment(telegramUserId, Long.parseLong(callbackData.substring(ADMIN_PAYMENT_REJECT_PREFIX.length())), callbackQueryId);
+            return true;
+        }
+        return false;
     }
 
     private void handleLanguageSelection(Long chatId, Long telegramUserId, String languageCode, String callbackQueryId) {
@@ -419,6 +443,12 @@ public class TelegramCallbackHandler {
     private void handleDeclareCash(Long telegramUserId, Long paymentId, String callbackQueryId) {
         paymentService.declareCashPayment(telegramUserId, paymentId);
         telegramNotificationService.answerCallback(callbackQueryId, resolveLanguage(telegramUserId) == UserLanguage.RU ? "Выбран наличный платёж." : "Naqd to'lov tanlandi.");
+    }
+
+    private void handleUploadReceiptPrompt(Long chatId, Long telegramUserId, String callbackQueryId) {
+        UserLanguage language = resolveLanguage(telegramUserId);
+        telegramNotificationService.answerCallback(callbackQueryId, language == UserLanguage.RU ? "Отправьте фото чека." : "Chek rasmini yuboring.");
+        telegramNotificationService.sendPrivateText(chatId, telegramMessages.uploadReceiptPrompt(language), null);
     }
 
     private void handleApprovePayment(Long telegramUserId, Long paymentId, String callbackQueryId) {

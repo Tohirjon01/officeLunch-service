@@ -5,7 +5,9 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
             if (created) {
                 auditService.log(AuditAction.PAYMENT_CREATED, session.getId(), order.getUser().getId(), null, saved.getAmount());
             }
-            if (lunchProperties.payment().sendReportOnClose()) {
+            if (saved.getStatus() != PaymentRecordStatus.PAID) {
                 sendPaymentReport(saved);
             }
         }
@@ -99,8 +101,9 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentMethod(PaymentMethod.CARD);
         payment.setReceiptFileId(receiptFileId);
         payment.setReceiptMessageId(receiptMessageId);
-        payment.setStatus(PaymentRecordStatus.RECEIPT_SENT);
+        payment.setStatus(PaymentRecordStatus.WAITING_APPROVAL);
         payment.setAdminComment(null);
+        payment.setPaidAt(null);
         Payment saved = paymentRepository.save(payment);
         auditService.log(AuditAction.PAYMENT_RECEIPT_SENT, saved.getOrderSession().getId(), user.getId(), null, saved.getReceiptFileId());
 
@@ -159,7 +162,7 @@ public class PaymentServiceImpl implements PaymentService {
         userOrderRepository.save(payment.getUserOrder());
         Payment saved = paymentRepository.save(payment);
         auditService.log(AuditAction.PAYMENT_REJECTED, saved.getOrderSession().getId(), actorUserId, null, saved.getId());
-        notifyUserAboutPayment(saved, telegramMessages.paymentRejected());
+        notifyUserAboutPayment(saved, telegramMessages.paymentRejected(), telegramKeyboards.cashPaymentButton(saved.getId()));
         return toResponse(saved);
     }
 
@@ -203,7 +206,7 @@ public class PaymentServiceImpl implements PaymentService {
                 paidAmount,
                 expected.subtract(paidAmount),
                 filter(payments, PaymentRecordStatus.WAITING_PAYMENT),
-                filter(payments, PaymentRecordStatus.RECEIPT_SENT),
+                waitingApprovalPayments(payments),
                 filter(payments, PaymentRecordStatus.CASH_DECLARED),
                 paid,
                 filter(payments, PaymentRecordStatus.REJECTED)
@@ -223,7 +226,7 @@ public class PaymentServiceImpl implements PaymentService {
                 Waiting:
                 %s
 
-                Receipt sent:
+                Waiting approval:
                 %s
 
                 Cash:
@@ -260,6 +263,13 @@ public class PaymentServiceImpl implements PaymentService {
         return payments.stream().filter(payment -> payment.status() == status).toList();
     }
 
+    private List<PaymentResponse> waitingApprovalPayments(List<PaymentResponse> payments) {
+        return payments.stream()
+                .filter(payment -> payment.status() == PaymentRecordStatus.WAITING_APPROVAL
+                        || payment.status() == PaymentRecordStatus.RECEIPT_SENT)
+                .toList();
+    }
+
     private String lines(List<PaymentResponse> payments, boolean includeMethod) {
         if (payments.isEmpty()) {
             return "-";
@@ -286,28 +296,31 @@ public class PaymentServiceImpl implements PaymentService {
     private String buildPaymentReport(Payment payment) {
         UserOrder order = payment.getUserOrder();
         String mealName = order.getMenuItem() == null ? "N/A" : order.getMenuItem().getName();
+        int quantity = order.getQuantity() == null ? 1 : order.getQuantity();
         return """
-                Sizning bugungi buyurtmangiz:
+                Bugungi buyurtmangiz bo'yicha to'lov:
 
                 Restoran: %s
-                Ovqat: %s
-                Ovqat narxi: %s
-                Idish: %s
-                Dostavka ulushi: %s
 
-                Jami: %s
+                Buyurtma:
+                - %s x%d — %s
+                - Idish — %s
+                - Dostavka ulushi — %s
 
-                To'lov uchun karta:
-                %s
-                %s
+                Total Price: %s
 
-                To'lov qilganingizdan keyin chekni rasm qilib shu botga yuboring.
-                Agar naqd bermoqchi bo'lsangiz, 'Naqd to'layman' tugmasini bosing.
+                Payment Instructions:
+                Card Number: %s
+                Card Owner: %s
+
+                To'lov qilganingizdan keyin "Upload Receipt" tugmasini bosing va chek rasmini shu botga yuboring.
+                Agar naqd bermoqchi bo'lsangiz, "Naqd to'layman" tugmasini bosing.
                 """.formatted(
                 payment.getOrderSession().getRestaurant().getName(),
                 mealName,
-                MoneyUtils.formatUzs(order.getFoodPrice()),
-                MoneyUtils.formatUzs(order.getContainerPrice()),
+                quantity,
+                MoneyUtils.formatUzs(lineTotal(order.getFoodPrice(), order.getQuantity())),
+                MoneyUtils.formatUzs(lineTotal(order.getContainerPrice(), order.getQuantity())),
                 MoneyUtils.formatUzs(order.getDeliveryShare()),
                 MoneyUtils.formatUzs(payment.getAmount()),
                 lunchProperties.payment().cardNumber(),
@@ -318,11 +331,11 @@ public class PaymentServiceImpl implements PaymentService {
     private void notifyAdminsAboutReceipt(Payment payment) {
         String mealName = payment.getUserOrder().getMenuItem() == null ? "N/A" : payment.getUserOrder().getMenuItem().getName();
         String message = """
-                User sent payment receipt
+                Receipt waiting approval
 
                 User: %s
                 Phone: %s
-                Amount: %s
+                Total amount: %s
                 Meal: %s
                 """.formatted(
                 payment.getUser().getDisplayName(),
@@ -331,16 +344,14 @@ public class PaymentServiceImpl implements PaymentService {
                 mealName
         );
 
-        userService.getApprovedAdmins().stream()
-                .filter(admin -> admin.getPrivateChatId() != null)
-                .forEach(admin -> {
+        adminNotificationChatIds().forEach(adminChatId -> {
                     notificationService.sendPrivateText(
-                            admin.getPrivateChatId(),
+                            adminChatId,
                             message,
                             telegramKeyboards.cardPaymentAdminActions(payment.getId())
                     );
                     notificationService.copyPrivateMessage(
-                            admin.getPrivateChatId(),
+                            adminChatId,
                             payment.getUser().getPrivateChatId(),
                             payment.getReceiptMessageId()
                     );
@@ -363,19 +374,36 @@ public class PaymentServiceImpl implements PaymentService {
                 mealName
         );
 
-        userService.getApprovedAdmins().stream()
-                .filter(admin -> admin.getPrivateChatId() != null)
-                .forEach(admin -> notificationService.sendPrivateText(
-                        admin.getPrivateChatId(),
+        adminNotificationChatIds().forEach(adminChatId -> notificationService.sendPrivateText(
+                        adminChatId,
                         message,
                         telegramKeyboards.cashPaymentAdminActions(payment.getId())
                 ));
     }
 
     private void notifyUserAboutPayment(Payment payment, String message) {
+        notifyUserAboutPayment(payment, message, null);
+    }
+
+    private void notifyUserAboutPayment(Payment payment, String message, Object keyboard) {
         if (payment.getUser().getPrivateChatId() != null) {
-            notificationService.sendPrivateText(payment.getUser().getPrivateChatId(), message, null);
+            notificationService.sendPrivateText(payment.getUser().getPrivateChatId(), message, keyboard);
         }
+    }
+
+    private List<Long> adminNotificationChatIds() {
+        LinkedHashSet<Long> chatIds = userService.getApprovedAdmins().stream()
+                .map(LunchUser::getPrivateChatId)
+                .filter(Objects::nonNull)
+                .filter(chatId -> chatId > 0)
+                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+
+        Long bootstrapAdminChatId = lunchProperties.bootstrap() == null ? null : lunchProperties.bootstrap().superAdminPrivateChatId();
+        if (bootstrapAdminChatId != null && bootstrapAdminChatId > 0) {
+            chatIds.add(bootstrapAdminChatId);
+        }
+
+        return List.copyOf(chatIds);
     }
 
     private UserLanguage languageOf(LunchUser user) {
@@ -407,5 +435,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     private BigDecimal defaultMoney(BigDecimal value) {
         return value == null ? BigDecimal.ZERO : value;
+    }
+
+    private BigDecimal lineTotal(BigDecimal unitPrice, Integer quantity) {
+        return defaultMoney(unitPrice).multiply(BigDecimal.valueOf(quantity == null ? 0L : quantity.longValue()));
     }
 }

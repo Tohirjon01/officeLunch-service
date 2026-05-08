@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.company.lunchbot.bot.keyboard.TelegramKeyboards;
 import uz.company.lunchbot.bot.message.TelegramMessages;
 import uz.company.lunchbot.config.LunchProperties;
+import uz.company.lunchbot.config.TelegramBotProperties;
 import uz.company.lunchbot.dto.request.OpenRestaurantVoteSessionRequest;
 import uz.company.lunchbot.dto.response.RestaurantVoteCountResponse;
 import uz.company.lunchbot.dto.response.RestaurantVoteSessionResponse;
@@ -58,6 +59,7 @@ public class RestaurantVoteSessionServiceImpl implements RestaurantVoteSessionSe
     private final AdminAccessService adminAccessService;
     private final AuditService auditService;
     private final LunchProperties lunchProperties;
+    private final TelegramBotProperties telegramBotProperties;
     private final Clock clock;
 
     @Override
@@ -296,7 +298,10 @@ public class RestaurantVoteSessionServiceImpl implements RestaurantVoteSessionSe
                 orderSession.getRestaurant().getName()
         );
 
-        notificationService.sendGroupText("✅ Bugungi restoran: " + orderSession.getRestaurant().getName(), null);
+        notificationService.sendGroupText(
+                buildWinnerAnnouncement(orderSession, voteCounts(saved)),
+                telegramKeyboards.groupPlaceOrderButton(telegramBotProperties.username())
+        );
         if (!reusedOpenSession) {
             notificationService.sendGroupText(
                     telegramMessages.todayMenu(orderSession, menuItemService.getActiveMenu(orderSession.getRestaurant().getId())),
@@ -397,6 +402,24 @@ public class RestaurantVoteSessionServiceImpl implements RestaurantVoteSessionSe
                 Ovoz berish uchun avval botga /start bosib ro'yxatdan o'ting.
                 ⏰ Voting deadline: %s
                 """.formatted(options, session.getDeadlineAt().toLocalTime());
+    }
+
+    private String buildWinnerAnnouncement(OrderSession orderSession, List<RestaurantVoteCountResponse> counts) {
+        String summary = counts.stream()
+                .map(count -> "- " + count.restaurantName() + " — " + count.voteCount() + " ovoz")
+                .reduce((left, right) -> left + "\n" + right)
+                .orElse("-");
+
+        return """
+                ✅ Tanlash yakunlandi.
+
+                Tanlangan restoran: %s
+
+                Natijalar:
+                %s
+
+                Buyurtma berish uchun private chatga o'ting.
+                """.formatted(orderSession.getRestaurant().getName(), summary);
     }
 
     private String buildTieMessage(List<RestaurantVoteCountResponse> counts) {

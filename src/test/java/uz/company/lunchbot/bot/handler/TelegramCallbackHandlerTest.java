@@ -475,4 +475,108 @@ class TelegramCallbackHandlerTest {
         verify(restaurantVoteSessionService).castVote(1001L, 10L, 1L);
         verify(notificationService).answerCallback("cb-vote-4", "Ovozingiz saqlandi.");
     }
+
+    @Test
+    void shouldApprovePaymentFromAdminReceiptCallback() {
+        CallbackDataParser callbackDataParser = mock(CallbackDataParser.class);
+        UserService userService = mock(UserService.class);
+        UserOrderService userOrderService = mock(UserOrderService.class);
+        OrderSessionService orderSessionService = mock(OrderSessionService.class);
+        MenuItemService menuItemService = mock(MenuItemService.class);
+        SummaryService summaryService = mock(SummaryService.class);
+        NotificationService notificationService = mock(NotificationService.class);
+        RestaurantVoteSessionService restaurantVoteSessionService = mock(RestaurantVoteSessionService.class);
+        PaymentService paymentService = mock(PaymentService.class);
+        TelegramAdminCommandService telegramAdminCommandService = mock(TelegramAdminCommandService.class);
+        TelegramRegistrationStateService registrationStateService = mock(TelegramRegistrationStateService.class);
+
+        TelegramCallbackHandler handler = new TelegramCallbackHandler(
+                callbackDataParser,
+                userService,
+                userOrderService,
+                orderSessionService,
+                menuItemService,
+                summaryService,
+                notificationService,
+                new TelegramMessages(),
+                restaurantVoteSessionService,
+                paymentService,
+                telegramAdminCommandService,
+                registrationStateService,
+                new TelegramKeyboards()
+        );
+
+        CallbackQuery callbackQuery = mock(CallbackQuery.class);
+        Message message = mock(Message.class);
+        org.telegram.telegrambots.meta.api.objects.User telegramUser = mock(org.telegram.telegrambots.meta.api.objects.User.class);
+        when(callbackQuery.getData()).thenReturn("admin_payment_approve_44");
+        when(callbackQuery.getMessage()).thenReturn(message);
+        when(message.getChatId()).thenReturn(500L);
+        when(callbackQuery.getFrom()).thenReturn(telegramUser);
+        when(telegramUser.getId()).thenReturn(1001L);
+        when(callbackQuery.getId()).thenReturn("cb-payment-approve");
+
+        LunchUser actor = new LunchUser();
+        actor.setId(1L);
+        actor.setStatus(UserStatus.APPROVED);
+        when(userService.getApprovedUserByTelegramUserId(1001L)).thenReturn(actor);
+
+        handler.handle(callbackQuery);
+
+        verify(paymentService).approvePayment(44L, 1L);
+        verify(notificationService).answerCallback("cb-payment-approve", "Payment approved");
+    }
+
+    @Test
+    void shouldPromptUserToUploadReceipt() {
+        CallbackDataParser callbackDataParser = mock(CallbackDataParser.class);
+        UserService userService = mock(UserService.class);
+        UserOrderService userOrderService = mock(UserOrderService.class);
+        OrderSessionService orderSessionService = mock(OrderSessionService.class);
+        MenuItemService menuItemService = mock(MenuItemService.class);
+        SummaryService summaryService = mock(SummaryService.class);
+        NotificationService notificationService = mock(NotificationService.class);
+        RestaurantVoteSessionService restaurantVoteSessionService = mock(RestaurantVoteSessionService.class);
+        PaymentService paymentService = mock(PaymentService.class);
+        TelegramAdminCommandService telegramAdminCommandService = mock(TelegramAdminCommandService.class);
+        TelegramRegistrationStateService registrationStateService = mock(TelegramRegistrationStateService.class);
+
+        TelegramCallbackHandler handler = new TelegramCallbackHandler(
+                callbackDataParser,
+                userService,
+                userOrderService,
+                orderSessionService,
+                menuItemService,
+                summaryService,
+                notificationService,
+                new TelegramMessages(),
+                restaurantVoteSessionService,
+                paymentService,
+                telegramAdminCommandService,
+                registrationStateService,
+                new TelegramKeyboards()
+        );
+
+        CallbackQuery callbackQuery = mock(CallbackQuery.class);
+        Message message = mock(Message.class);
+        org.telegram.telegrambots.meta.api.objects.User telegramUser = mock(org.telegram.telegrambots.meta.api.objects.User.class);
+        when(callbackQuery.getData()).thenReturn("PAYMENT_UPLOAD_RECEIPT:44");
+        when(callbackQuery.getMessage()).thenReturn(message);
+        when(message.getChatId()).thenReturn(500L);
+        when(callbackQuery.getFrom()).thenReturn(telegramUser);
+        when(telegramUser.getId()).thenReturn(1001L);
+        when(callbackQuery.getId()).thenReturn("cb-payment-upload");
+        when(callbackDataParser.parse("PAYMENT_UPLOAD_RECEIPT:44"))
+                .thenReturn(new CallbackDataParser.ParsedCallback("PAYMENT_UPLOAD_RECEIPT", java.util.List.of("44")));
+
+        LunchUser user = new LunchUser();
+        user.setId(7L);
+        user.setLanguage(UserLanguage.UZ);
+        when(userService.findByTelegramUserId(1001L)).thenReturn(java.util.Optional.of(user));
+
+        handler.handle(callbackQuery);
+
+        verify(notificationService).answerCallback("cb-payment-upload", "Chek rasmini yuboring.");
+        verify(notificationService).sendPrivateText(500L, "Chek rasmini shu chatga yuboring. Admin tekshirib, to'lovni tasdiqlaydi.", null);
+    }
 }

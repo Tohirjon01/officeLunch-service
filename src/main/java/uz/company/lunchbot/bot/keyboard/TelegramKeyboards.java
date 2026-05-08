@@ -128,7 +128,7 @@ public class TelegramKeyboards {
     }
 
     public Map<String, Object> groupPlaceOrderButton(String botUsername) {
-        return Map.of("inline_keyboard", List.of(List.of(urlButton("Place Order", "https://t.me/" + botUsername))));
+        return Map.of("inline_keyboard", List.of(List.of(urlButton("Order Now", "https://t.me/" + botUsername + "?start=order"))));
     }
 
     public Map<String, Object> restaurantVoting(List<Restaurant> restaurants, Long voteSessionId) {
@@ -147,6 +147,7 @@ public class TelegramKeyboards {
 
     public Map<String, Object> cashPaymentButton(Long paymentId) {
         return Map.of("inline_keyboard", List.of(
+                List.of(callbackButton("Upload Receipt", "PAYMENT_UPLOAD_RECEIPT:" + paymentId)),
                 List.of(callbackButton("Naqd to'layman", "PAYMENT_CASH:" + paymentId)),
                 List.of(callbackButton("To'lov holati", "PAYMENT_STATUS:" + paymentId))
         ));
@@ -154,8 +155,8 @@ public class TelegramKeyboards {
 
     public Map<String, Object> cardPaymentAdminActions(Long paymentId) {
         return Map.of("inline_keyboard", List.of(List.of(
-                callbackButton("Approve", "PAYMENT_APPROVE:" + paymentId),
-                callbackButton("Reject", "PAYMENT_REJECT:" + paymentId)
+                callbackButton("✅ Approve", "admin_payment_approve_" + paymentId),
+                callbackButton("❌ Reject", "admin_payment_reject_" + paymentId)
         )));
     }
 

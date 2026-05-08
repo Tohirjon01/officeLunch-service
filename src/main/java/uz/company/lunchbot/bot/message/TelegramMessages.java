@@ -480,6 +480,12 @@ public class TelegramMessages {
         return "Chekingiz rad etildi. Iltimos, to'g'ri chekni qayta yuboring.";
     }
 
+    public String uploadReceiptPrompt(UserLanguage language) {
+        return isRu(language)
+                ? "Отправьте фото чека в этот чат. После проверки администратор подтвердит оплату."
+                : "Chek rasmini shu chatga yuboring. Admin tekshirib, to'lovni tasdiqlaydi.";
+    }
+
     public String cashPaymentApproved() {
         return "Naqd to'lovingiz tasdiqlandi. Rahmat.";
     }
@@ -493,7 +499,7 @@ public class TelegramMessages {
             case WAITING_PAYMENT -> isRu(language)
                     ? "Статус оплаты: ожидание оплаты."
                     : "To'lov holati: to'lov kutilmoqda.";
-            case RECEIPT_SENT -> isRu(language)
+            case WAITING_APPROVAL, RECEIPT_SENT -> isRu(language)
                     ? "Статус оплаты: чек отправлен, ожидает подтверждения."
                     : "To'lov holati: chek yuborilgan, admin tasdig'i kutilmoqda.";
             case CASH_DECLARED -> isRu(language)

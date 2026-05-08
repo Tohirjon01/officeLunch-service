@@ -81,9 +81,10 @@ class PaymentServiceTest {
         verify(notificationService).sendPrivateText(eq(2011L), messageCaptor.capture(), any());
         assertThat(messageCaptor.getValue())
                 .contains("Restoran: Osh Posh")
-                .contains("To'lov uchun karta:")
-                .contains("8600 1111 2222 3333")
-                .contains("Toxirjon Sadullayev");
+                .contains("Payment Instructions:")
+                .contains("Card Number: 8600 1111 2222 3333")
+                .contains("Card Owner: Toxirjon Sadullayev")
+                .contains("Upload Receipt");
     }
 
     @Test
@@ -119,7 +120,7 @@ class PaymentServiceTest {
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         service.submitReceipt(1001L, "file-1", 777L);
-        assertThat(payment.getStatus()).isEqualTo(PaymentRecordStatus.RECEIPT_SENT);
+        assertThat(payment.getStatus()).isEqualTo(PaymentRecordStatus.WAITING_APPROVAL);
         verify(notificationService).copyPrivateMessage(600L, 500L, 777L);
 
         payment.setStatus(PaymentRecordStatus.WAITING_PAYMENT);
